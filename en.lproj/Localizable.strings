@@ -29,15 +29,15 @@
 6. Verify that your printer supports AirPrint, as not all models are compatible.
 ";
 "faq3" = "Currently, the app supports the following seven formats: DOC, DOCX, XLS, XLSX, PPT, PPTX, and PDF.";
-"" = "";
-"" = "";
-"" = "";
-"" = "";
-"" = "";
-"" = "";
-"" = "";
-"" = "";
-"" = "";
+"Gallery" = "Gallery";
+"Scan" = "Scan";
+"Files" = "Files";
+"Browser" = "Browser";
+"Ready to print" = "Ready to print";
+"Upload files from gallery, scanner or browser" = "Upload files from gallery, scanner or browser";
+"It looks empty here" = "It looks empty here";
+"Add your first document to begin" = "Add your first document to begin";
+"Add document" = "Add document";
 "" = "";
 "" = "";
 "" = "";

@@ -49,8 +49,8 @@ class BaseController: UIViewController {
         
         topView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide)
-            make.left.right.equalToSuperview()
-            make.height.equalTo(50)
+            make.left.right.equalToSuperview().inset(10)
+            make.height.equalTo(65)
         }
     }
 }

@@ -20,7 +20,7 @@ final class BaseCell: UITableViewCell {
     }()
     
     private let rightImageView: UIImageView = {
-        let imageView = UIImageView(image: .init(named: "down"))
+        let imageView = UIImageView(image: .init(named: "arrow"))
         imageView.isHidden = true
         return imageView
     }()
@@ -95,6 +95,22 @@ final class BaseCell: UITableViewCell {
     func configure(type: SettingsOption) {
         titleLabel.text = type.displayTitle
         leftImageView.image = type.iconAsset
+    }
+    
+    func configure(type: ImportCellType) {
+        titleLabel.text = type.displayTitle
+        leftImageView.image = type.iconAsset
+        
+        leftImageView.snp.updateConstraints { make in
+            make.left.equalToSuperview().inset(9)
+            make.height.width.equalTo(60)
+        }
+        
+        titleLabel.snp.updateConstraints { make in
+            make.left.equalToSuperview().inset(86)
+        }
+        
+        rightImageView.isHidden = false
     }
     
     func configure(value: String, isSelected: Bool) {

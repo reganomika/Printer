@@ -87,7 +87,7 @@ final class TabBarView: UIView {
         
         let label = GradientLabel()
         label.label.text = title
-        label.label.font = .font(weight: .bold, size: 14)
+        label.label.font = .font(weight: .medium, size: 14)
         label.tag = 101
         
         container.addSubview(imageView)
@@ -136,7 +136,7 @@ final class TabBarView: UIView {
            
             let isSelected = index == i
             
-            label?.label.font = .font(weight: isSelected ? .bold : .medium, size: 14.0)
+//            label?.label.font = .font(weight: isSelected ? .bold : .medium, size: 14.0)
             
             imageView?.image = isSelected ? selectedImage : unselectedImage
             if isSelected {
