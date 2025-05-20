@@ -22,24 +22,24 @@ final class PaywallOptionView: UIView {
     
     lazy var titleLabel: UILabel = {
         let label = UILabel()
+        label.font = .font(weight: .bold, size: 18)
         label.textColor = .white
-        label.font = .font(weight: .bold, size: 16)
         return label
     }()
     
-    lazy var subtitleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .init(hex: "AFB0AF")
-        label.font = .font(weight: .medium, size: 16)
-        label.minimumScaleFactor = 0.5
-        label.adjustsFontSizeToFitWidth = true
+    lazy var subtitleLabel: GradientLabel = {
+        let label = GradientLabel()
+        label.label.textColor = .init(hex: "AFB0AF")
+        label.label.font = .font(weight: .medium, size: 16)
+        label.label.minimumScaleFactor = 0.5
+        label.label.adjustsFontSizeToFitWidth = true
         return label
     }()
     
     lazy var rightTitleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = .init(hex: "AFB0AF")
-        label.font = .font(weight: .bold, size: 16)
+        label.textColor = .white
+        label.font = .font(weight: .medium, size: 16)
         label.textAlignment = .right
         return label
     }()
@@ -70,10 +70,23 @@ final class PaywallOptionView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configure(title: String, subtitle: String?, rightTitle: String, isSelected: Bool) {
+    func configure(
+        title: String,
+        subtitle: String?,
+        rightTitle: String,
+        isSelected: Bool,
+        isGradientLabel: Bool
+    ) {
         titleLabel.text = title
+        
+        if isGradientLabel {
+            subtitleLabel.setLabelColor()
+        } else {
+            subtitleLabel.setLabelColor(plainColor: UIColor.init(hex: "AFB0AF"))
+        }
+        
         rightTitleLabel.text = rightTitle
-        subtitleLabel.text = subtitle
+        subtitleLabel.label.text = subtitle
         subtitleLabel.isHidden = subtitle == nil
         isSelectedOption = isSelected
     }

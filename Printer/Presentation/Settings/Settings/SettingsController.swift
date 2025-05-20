@@ -137,12 +137,10 @@ extension SettingsController: UITableViewDataSource, UITableViewDelegate {
     }
     
     private func presentPremiumPaywall() {
-        
-//        guard PremiumManager.shared.isPremium.value else {
-//            PaywallManager.shared.showPaywall()
-//            return
-//        }
-        
+        guard PremiumManager.shared.isPremium.value else {
+            PaywallManager.shared.showPaywall()
+            return
+        }
     }
     
     private func presentFaq() {

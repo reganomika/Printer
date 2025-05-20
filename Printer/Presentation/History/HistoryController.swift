@@ -1,4 +1,5 @@
 import UIKit
+import PremiumManager
 import RealmSwift
 import ShadowImageButton
 
@@ -126,12 +127,49 @@ final class HistoryController: BaseController {
 
     @objc private func openImport() {
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
-        // Навигация на экран импорта
+        if let tabbar = parent?.parent as? TabBarController {
+            tabbar.switchToViewController(0)
+        }
     }
     
     private func viewDocument(_ document: Document) {
         let previewVC = DocumentPreviewController(document: document)
         present(vc: previewVC)
+    }
+    
+    private func shareDocument(_ document: Document) {
+        let fileURL = DocumentFileManager.shared.fileURL(for: document.filePath)
+
+        let activityVC = UIActivityViewController(activityItems: [fileURL], applicationActivities: nil)
+
+        if let popover = activityVC.popoverPresentationController {
+            popover.sourceView = view
+            popover.sourceRect = CGRect(x: view.bounds.midX, y: view.bounds.maxY - 40, width: 0, height: 0)
+            popover.permittedArrowDirections = []
+        }
+
+        present(activityVC, animated: true)
+    }
+    
+    private func printDocument(_ document: Document) {
+        
+        guard PremiumManager.shared.isPremium.value else {
+            PaywallManager.shared.showPaywall()
+            return
+        }
+        
+        if Storage.shared.buttonsTapNumber > 4, !Storage.shared.wasReviewScreen {
+            Storage.shared.wasReviewScreen = true
+            UIApplication.topViewController()?.presentCrossDissolve(vc: ReviewController())
+        }
+        Storage.shared.buttonsTapNumber += 1
+        
+        let fileURL = DocumentFileManager.shared.fileURL(for: document.filePath)
+
+        let printController = UIPrintInteractionController.shared
+        printController.printingItem = fileURL
+
+        printController.present(animated: true)
     }
 }
 
@@ -179,11 +217,11 @@ extension HistoryController: BaseCellDelegate {
         })
 
         alert.addAction(UIAlertAction(title: "Share", style: .default) { _ in
-//            self.shareDocument(document)
+            self.shareDocument(document)
         })
 
         alert.addAction(UIAlertAction(title: "Print", style: .default) { _ in
-//            self.printDocument(document)
+            self.printDocument(document)
         })
 
         alert.addAction(UIAlertAction(title: "Delete", style: .destructive) { _ in

@@ -149,6 +149,8 @@ final class BaseCell: UITableViewCell {
     
     func configure(type: ImportCellType) {
         
+        rightImageView.image = .init(named: "arrow")
+        
         documentStack.isHidden = true
         titleLabel.isHidden = false
         

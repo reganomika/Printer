@@ -125,7 +125,7 @@ final class TabBarView: UIView {
         delegate?.tabBarView(self, didSelectItemAt: selectedIndex)
     }
 
-    private func updateSelectedButton(at index: Int) {
+   func updateSelectedButton(at index: Int) {
         for (i, item) in items.enumerated() {
             guard case let .tabItem(selectedImage, unselectedImage, _) = item,
                   i < tabButtons.count else { continue }
@@ -135,9 +135,7 @@ final class TabBarView: UIView {
             let label = button.viewWithTag(101) as? GradientLabel
            
             let isSelected = index == i
-            
-//            label?.label.font = .font(weight: isSelected ? .bold : .medium, size: 14.0)
-            
+                        
             imageView?.image = isSelected ? selectedImage : unselectedImage
             if isSelected {
                 label?.setLabelColor()

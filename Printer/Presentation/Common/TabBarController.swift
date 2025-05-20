@@ -35,7 +35,7 @@ final class TabBarController: UIViewController {
         setupView()
         setupConstraints()
         
-        switchToViewController(viewControllers[0])
+        switchToViewController(0)
     }
     
     private func setupView() {
@@ -51,7 +51,11 @@ final class TabBarController: UIViewController {
         }
     }
 
-    private func switchToViewController(_ newViewController: UIViewController) {
+    func switchToViewController(_ index: Int) {
+        
+        tabBarView.updateSelectedButton(at: index)
+        
+        let newViewController = viewControllers[index]
         
         currentViewController?.willMove(toParent: nil)
         currentViewController?.view.removeFromSuperview()
@@ -73,7 +77,7 @@ extension TabBarController: TabBarViewDelegate {
     
     func tabBarView(_ tabBarView: TabBarView, didSelectItemAt index: Int) {
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
-        let selectedViewController = viewControllers[index]
-        switchToViewController(selectedViewController)
+      
+        switchToViewController(index)
     }
 }

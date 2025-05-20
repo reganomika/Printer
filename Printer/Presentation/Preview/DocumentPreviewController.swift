@@ -1,35 +1,58 @@
 import UIKit
+import PremiumManager
 import PDFKit
 import VisionKit
 import UniformTypeIdentifiers
 import QuickLook
+import ShadowImageButton
 
 final class DocumentPreviewController: UIViewController {
 
-    private let document: Document
-    
+    private let viewModel: DocumentPreviewViewModel
     private var editableCopyURL: URL?
-    
-    private lazy var previewItem: URL = {
-        DocumentFileManager.shared.fileURL(for: document.filePath)
-    }()
 
     // MARK: - UI
 
     private let pdfView = PDFView()
     private let titleLabel = UILabel()
     private let dateLabel = UILabel()
-    private let printButton = UIButton(type: .system)
     private let backButton = UIButton(type: .system)
-    
     private let actionStack = UIStackView()
     private let editButton = UIButton(type: .system)
     private let addPagesButton = UIButton(type: .system)
+    
+    private lazy var printButton = ShadowImageButton().apply {
+        $0.configure(
+            buttonConfig: .init(
+                title: "Print".localized,
+                font: .font(weight: .bold, size: 16),
+                textColor: .white,
+                image: nil
+            ),
+            backgroundImageConfig: .init(
+                image: UIImage(named: "settingsPremiumBackground"),
+                cornerRadius: 12.0,
+                shadowConfig: .init(
+                    color: UIColor(hex: "0044FF"),
+                    opacity: 0.5,
+                    offset: CGSize(width: 0, height: 4),
+                    radius: 12
+                )
+            )
+        )
+        $0.action = { [weak self] in self?.didTapPrint() }
+    }
+    
+    private lazy var shadowImageView: UIImageView = {
+        let view = UIImageView(image: .init(named: "shadow"))
+        view.contentMode = .scaleAspectFill
+        return view
+    }()
 
     // MARK: - Init
 
     init(document: Document) {
-        self.document = document
+        self.viewModel = DocumentPreviewViewModel(document: document)
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -50,34 +73,32 @@ final class DocumentPreviewController: UIViewController {
     private func setupUI() {
         view.backgroundColor = UIColor(hex: "#0A0F2E")
 
-        // PDF View
         pdfView.autoScales = true
         pdfView.displayMode = .singlePageContinuous
         pdfView.displayDirection = .vertical
+        pdfView.backgroundColor = .clear
         view.addSubview(pdfView)
         pdfView.snp.makeConstraints {
             $0.top.equalToSuperview().inset(160)
             $0.left.right.equalToSuperview().inset(16)
-            $0.bottom.equalToSuperview().inset(120)
+            $0.bottom.equalToSuperview()
         }
 
-        // Title
-        titleLabel.text = document.name
+        titleLabel.text = viewModel.document.name
         titleLabel.textColor = .white
-        titleLabel.font = .font(weight: .bold, size: 20)
+        titleLabel.font = .font(weight: .bold, size: 18)
         titleLabel.lineBreakMode = .byTruncatingTail
         view.addSubview(titleLabel)
 
         titleLabel.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(16)
-            $0.left.equalToSuperview().inset(60)
+            $0.top.equalTo(view.safeAreaLayoutGuide).inset(19)
+            $0.left.equalToSuperview().inset(63)
             $0.right.lessThanOrEqualToSuperview().inset(100)
         }
 
-        // Date
-        dateLabel.text = DateFormatter.displayDate.string(from: document.dateAdded)
+        dateLabel.text = DateFormatter.displayDate.string(from: viewModel.document.dateAdded)
         dateLabel.textColor = UIColor(hex: "ADACB8")
-        dateLabel.font = .font(weight: .medium, size: 14)
+        dateLabel.font = .font(weight: .medium, size: 16)
         view.addSubview(dateLabel)
 
         dateLabel.snp.makeConstraints {
@@ -85,41 +106,38 @@ final class DocumentPreviewController: UIViewController {
             $0.left.equalTo(titleLabel)
         }
 
-        // Back Button
-        backButton.setImage(UIImage(systemName: "chevron.left"), for: .normal)
+        backButton.setImage(UIImage(named: "left"), for: .normal)
         backButton.tintColor = .white
         backButton.addTarget(self, action: #selector(didTapBack), for: .touchUpInside)
         view.addSubview(backButton)
 
         backButton.snp.makeConstraints {
-            $0.left.equalToSuperview().inset(16)
-            $0.centerY.equalTo(titleLabel)
-            $0.size.equalTo(30)
+            $0.left.equalToSuperview().inset(25)
+            $0.top.equalTo(view.safeAreaLayoutGuide).inset(19)
+            $0.size.equalTo(24)
         }
-
-        // Print Button
-        printButton.setTitle("Print", for: .normal)
-        printButton.setTitleColor(.white, for: .normal)
-        printButton.titleLabel?.font = .font(weight: .bold, size: 16)
-        printButton.backgroundColor = UIColor.systemBlue
-        printButton.layer.cornerRadius = 12
-        printButton.addTarget(self, action: #selector(didTapPrint), for: .touchUpInside)
+        
         view.addSubview(printButton)
 
         printButton.snp.makeConstraints {
-            $0.centerY.equalTo(titleLabel)
-            $0.right.equalToSuperview().inset(16)
-            $0.height.equalTo(36)
-            $0.width.equalTo(80)
+            $0.top.equalTo(view.safeAreaLayoutGuide).inset(26)
+            $0.right.equalToSuperview().inset(25)
+            $0.height.equalTo(35)
+            $0.width.equalTo(90)
+        }
+        
+        view.addSubview(shadowImageView)
+        shadowImageView.snp.makeConstraints { make in
+            make.bottom.left.right.equalToSuperview()
+            make.height.equalTo(182)
         }
 
-        // Action Buttons (Edit + Add Pages)
         actionStack.axis = .horizontal
         actionStack.spacing = 16
         actionStack.distribution = .fillEqually
 
-        configureActionButton(editButton, title: "Edit", icon: "pencil")
-        configureActionButton(addPagesButton, title: "Add pages", icon: "plus.square.on.square")
+        configureActionButton(editButton, title: "Edit".localized, icon: "edit")
+        configureActionButton(addPagesButton, title: "Add pages".localized, icon: "addPages")
 
         editButton.addTarget(self, action: #selector(didTapEdit), for: .touchUpInside)
         addPagesButton.addTarget(self, action: #selector(didTapAddPages), for: .touchUpInside)
@@ -129,26 +147,33 @@ final class DocumentPreviewController: UIViewController {
         view.addSubview(actionStack)
 
         actionStack.snp.makeConstraints {
-            $0.left.right.equalToSuperview().inset(20)
+            $0.left.right.equalToSuperview().inset(26)
             $0.bottom.equalToSuperview().inset(32)
-            $0.height.equalTo(56)
+            $0.height.equalTo(64)
         }
     }
 
     private func configureActionButton(_ button: UIButton, title: String, icon: String) {
         var config = UIButton.Configuration.filled()
-        config.title = title
-        config.image = UIImage(systemName: icon)
-        config.imagePadding = 8
-        config.baseBackgroundColor = UIColor(hex: "#10163A")
+        config.image = UIImage(named: icon)
+        config.imagePadding = 10
+        config.baseBackgroundColor = UIColor(hex: "#101B37")
         config.baseForegroundColor = .white
         config.cornerStyle = .capsule
+
+        let font = UIFont.font(weight: .bold, size: 16)
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: font,
+            .foregroundColor: UIColor.white
+        ]
+        let attributedTitle = NSAttributedString(string: title, attributes: attributes)
+        config.attributedTitle = AttributedString(attributedTitle)
+
         button.configuration = config
     }
 
     private func loadPDF() {
-        let url = DocumentFileManager.shared.fileURL(for: document.filePath)
-        if let doc = PDFDocument(url: url) {
+        if let doc = viewModel.loadPDF() {
             pdfView.document = doc
         }
     }
@@ -160,9 +185,20 @@ final class DocumentPreviewController: UIViewController {
     }
 
     @objc private func didTapPrint() {
-        let url = DocumentFileManager.shared.fileURL(for: document.filePath)
+        
+        guard PremiumManager.shared.isPremium.value else {
+            PaywallManager.shared.showPaywall()
+            return
+        }
+        
+        if Storage.shared.buttonsTapNumber > 4, !Storage.shared.wasReviewScreen {
+            Storage.shared.wasReviewScreen = true
+            UIApplication.topViewController()?.presentCrossDissolve(vc: ReviewController())
+        }
+        Storage.shared.buttonsTapNumber += 1
+        
         let controller = UIPrintInteractionController.shared
-        controller.printingItem = url
+        controller.printingItem = viewModel.documentURL
         controller.present(animated: true)
     }
 
@@ -178,13 +214,15 @@ final class DocumentPreviewController: UIViewController {
         selector.delegate = self
         presentCrossDissolve(vc: selector)
     }
-    
-    private func presentScanner() {
-        guard VNDocumentCameraViewController.isSupported else {
-            print("Сканер не поддерживается")
-            return
-        }
 
+    private func appendPDF(data: Data) {
+        if viewModel.appendPDF(with: data) {
+            loadPDF()
+        }
+    }
+
+    private func presentScanner() {
+        guard VNDocumentCameraViewController.isSupported else { return }
         let scanner = VNDocumentCameraViewController()
         scanner.delegate = self
         present(scanner, animated: true)
@@ -198,60 +236,18 @@ final class DocumentPreviewController: UIViewController {
     }
 
     private func presentDocumentPicker() {
-        let types = [UTType.pdf]
-        let picker = UIDocumentPickerViewController(forOpeningContentTypes: types, asCopy: true)
+        let picker = UIDocumentPickerViewController(forOpeningContentTypes: [UTType.pdf], asCopy: true)
         picker.delegate = self
-        picker.allowsMultipleSelection = false
         present(picker, animated: true)
-    }
-    
-    private func appendPDF(data: Data) {
-        let currentURL = DocumentFileManager.shared.fileURL(for: document.filePath)
-        guard
-            let currentDoc = PDFDocument(url: currentURL),
-            let newDoc = PDFDocument(data: data)
-        else { return }
-
-        let combinedDoc = PDFDocument()
-
-        // Добавляем страницы текущего документа
-        for i in 0..<currentDoc.pageCount {
-            if let page = currentDoc.page(at: i) {
-                combinedDoc.insert(page, at: combinedDoc.pageCount)
-            }
-        }
-
-        // Добавляем страницы нового документа
-        for i in 0..<newDoc.pageCount {
-            if let page = newDoc.page(at: i) {
-                combinedDoc.insert(page, at: combinedDoc.pageCount)
-            }
-        }
-
-        // Сохраняем новый файл, перезаписывая старый
-        if let combinedData = combinedDoc.dataRepresentation() {
-            do {
-                try DocumentFileManager.shared.replaceFile(at: document.filePath, with: combinedData)
-                RealmManager.shared.updateDocument(document) {
-                    print("📄 Документ обновлён")
-                }
-                loadPDF() // Перезагружаем PDF
-            } catch {
-                print("❌ Не удалось сохранить объединённый PDF: \(error)")
-            }
-        }
     }
 }
 
 extension DocumentPreviewController: AddPagesSourceSelectorDelegate {
     func addPagesSourceSelectorDidSelect(_ source: AddPageSource) {
         switch source {
-        case .camera:
-            presentScanner()
-        case .gallery:
-            presentImagePicker()
-        case .files:
-            presentDocumentPicker()
+        case .camera: presentScanner()
+        case .gallery: presentImagePicker()
+        case .files: presentDocumentPicker()
         }
     }
 }
@@ -259,16 +255,14 @@ extension DocumentPreviewController: AddPagesSourceSelectorDelegate {
 extension DocumentPreviewController: VNDocumentCameraViewControllerDelegate {
     func documentCameraViewController(_ controller: VNDocumentCameraViewController, didFinishWith scan: VNDocumentCameraScan) {
         controller.dismiss(animated: true)
-
-        let pdfData = UIGraphicsPDFRenderer(bounds: UIScreen.main.bounds).pdfData { ctx in
+        let data = UIGraphicsPDFRenderer(bounds: UIScreen.main.bounds).pdfData { ctx in
             for i in 0..<scan.pageCount {
                 let img = scan.imageOfPage(at: i)
                 ctx.beginPage()
                 img.draw(in: CGRect(origin: .zero, size: UIScreen.main.bounds.size))
             }
         }
-
-        appendPDF(data: pdfData)
+        appendPDF(data: data)
     }
 }
 
@@ -276,12 +270,10 @@ extension DocumentPreviewController: UIImagePickerControllerDelegate, UINavigati
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         picker.dismiss(animated: true)
         guard let image = info[.originalImage] as? UIImage else { return }
-
-        let pdfData = UIGraphicsPDFRenderer(bounds: CGRect(origin: .zero, size: image.size)).pdfData { ctx in
-            ctx.beginPage()
+        let pdfData = UIGraphicsPDFRenderer(bounds: CGRect(origin: .zero, size: image.size)).pdfData {
+            $0.beginPage()
             image.draw(at: .zero)
         }
-
         appendPDF(data: pdfData)
     }
 }
@@ -294,45 +286,28 @@ extension DocumentPreviewController: UIDocumentPickerDelegate {
 }
 
 extension DocumentPreviewController: QLPreviewControllerDataSource {
-    func numberOfPreviewItems(in controller: QLPreviewController) -> Int {
-        return 1
-    }
+    func numberOfPreviewItems(in controller: QLPreviewController) -> Int { 1 }
 
     func previewController(_ controller: QLPreviewController, previewItemAt index: Int) -> QLPreviewItem {
-        let originalURL = DocumentFileManager.shared.fileURL(for: document.filePath)
-        let tempDirectory = FileManager.default.temporaryDirectory
-        let tempURL = tempDirectory.appendingPathComponent("edit_session_\(UUID().uuidString).pdf")
-
-        do {
-            try FileManager.default.copyItem(at: originalURL, to: tempURL)
-            editableCopyURL = tempURL
-            return tempURL as QLPreviewItem
-        } catch {
-            print("Ошибка копирования PDF для редактирования: \(error)")
-            return originalURL as QLPreviewItem
+        if let copy = viewModel.editableCopyURL() {
+            editableCopyURL = copy
+            return copy as QLPreviewItem
         }
+        return viewModel.documentURL as QLPreviewItem
     }
 }
 
 extension DocumentPreviewController: QLPreviewControllerDelegate {
     func previewController(_ controller: QLPreviewController, editingModeFor previewItem: QLPreviewItem) -> QLPreviewItemEditingMode {
-        return .updateContents
+        .updateContents
     }
-    
+
     func previewControllerDidDismiss(_ controller: QLPreviewController) {
-        if let url = controller.currentPreviewItem?.previewItemURL {
-            do {
-                let targetPath = document.filePath
-                try DocumentFileManager.shared.replaceFile(at: targetPath, with: try Data(contentsOf: url))
+        guard let url = controller.currentPreviewItem?.previewItemURL,
+              let data = try? Data(contentsOf: url)
+        else { return }
 
-                RealmManager.shared.updateDocument(document) {
-                    print("✅ Документ обновлён после редактирования")
-                }
-
-                loadPDF()
-            } catch {
-                print("❌ Не удалось сохранить изменённую копию: \(error)")
-            }
-        }
+        viewModel.replaceDocument(with: data)
+        loadPDF()
     }
 }

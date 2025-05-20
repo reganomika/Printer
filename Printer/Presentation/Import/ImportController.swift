@@ -10,6 +10,10 @@ class ImportController: BaseController {
         super.viewDidLoad()
         configureViewHierarchy()
         configureNavigation()
+        
+        viewModel.onOpenViewer = { [weak self] doc in
+            self?.viewDocument(doc)
+        }
     }
 
     private func configureViewHierarchy() {
@@ -32,7 +36,7 @@ class ImportController: BaseController {
     }
 
     private func configureNavigation() {
-        let string = "Welcome to\n\(Config.appName)"
+        let string = "Welcome to".localized + "\n" + Config.appName
         navigationTitle.text = string.localized
         navigationTitle.font = .font(weight: .bold, size: 25)
         navigationTitle.numberOfLines = 0
@@ -56,6 +60,11 @@ class ImportController: BaseController {
             $0.left.equalToSuperview().inset(25)
             $0.top.equalTo(view.safeAreaLayoutGuide).inset(33)
         }
+    }
+    
+    private func viewDocument(_ document: Document) {
+        let previewVC = DocumentPreviewController(document: document)
+        present(vc: previewVC)
     }
 }
 
@@ -115,12 +124,10 @@ extension ImportController: UIDocumentPickerDelegate {
             )
 
             RealmManager.shared.saveDocument(doc) {
-                print("📄 Документ из файлов добавлен")
+                self.viewDocument(doc)
             }
 
-        } catch {
-            print("❌ Ошибка при импорте файла: \(error)")
-        }
+        } catch {}
     }
 }
 
@@ -128,7 +135,6 @@ extension ImportController: VNDocumentCameraViewControllerDelegate {
     func documentCameraViewController(_ controller: VNDocumentCameraViewController, didFinishWith scan: VNDocumentCameraScan) {
         controller.dismiss(animated: true)
 
-        let pdfData = NSMutableData()
         let pdfRenderer = UIGraphicsPDFRenderer(bounds: UIScreen.main.bounds)
 
         let data = pdfRenderer.pdfData { context in
@@ -153,11 +159,9 @@ extension ImportController: VNDocumentCameraViewControllerDelegate {
             )
 
             RealmManager.shared.saveDocument(doc) {
-                print("📄 Скан добавлен")
+                self.viewDocument(doc)
             }
 
-        } catch {
-            print("❌ Ошибка при сохранении скана: \(error)")
-        }
+        } catch {}
     }
 }

@@ -33,6 +33,8 @@ enum ImportCellType: CaseIterable {
 final class ImportViewModel {
     let cells = ImportCellType.allCases
     
+    var onOpenViewer: ((Document) -> Void)?
+    
     func handleSelection(type: ImportCellType, from controller: UIViewController) {
         switch type {
         case .gallery:
@@ -50,7 +52,6 @@ final class ImportViewModel {
     
     private func presentScanner(from controller: UIViewController) {
         guard VNDocumentCameraViewController.isSupported else {
-            print("Сканер не поддерживается")
             return
         }
 
@@ -95,7 +96,7 @@ final class ImportViewModel {
             )
 
             RealmManager.shared.saveDocument(doc) {
-                print("Документ успешно добавлен из галереи")
+                self.onOpenViewer?(doc)
             }
         } catch {
             print("Ошибка при сохранении PDF: \(error)")

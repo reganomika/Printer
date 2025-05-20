@@ -7,8 +7,10 @@ final class HistoryViewModel {
     private(set) var documents: [Document] = []
 
     func startObserving() {
-        let realm = try! Realm()
-        let results = realm.objects(DocumentRLM.self)
+        let realm = try? Realm()
+        let results = realm?.objects(DocumentRLM.self)
+        
+        guard let results else { return }
 
         notificationToken = results.observe { [weak self] changes in
             guard let self else { return }

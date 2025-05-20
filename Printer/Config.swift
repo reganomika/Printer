@@ -5,8 +5,8 @@ enum Config {
     
     static let terms = "https://google.com"
     static let privacy = "https://google.com"
-    static let apphudKey = "app_5WQUhh1ko4e1BUjX5XEPfQSedht6Gn"
+    static let apphudKey = "app_XC19WzQ9BcgFTCMUYrezyhnDGqFR8Y"
     static let appId = ""
     static let appName = "Air Printer"
-    static let debugMode = true
+    static let debugMode = false
 }

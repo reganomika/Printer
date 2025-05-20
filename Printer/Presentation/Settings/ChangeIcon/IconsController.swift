@@ -10,7 +10,7 @@ enum Icon: String, CaseIterable, Identifiable {
     
     private enum Constants {
         static let primaryImageName = "playstore"
-        static let firstImageName = "playstore 1"
+        static let firstImageName = "playstore-1"
     }
     
     var image: UIImage? {

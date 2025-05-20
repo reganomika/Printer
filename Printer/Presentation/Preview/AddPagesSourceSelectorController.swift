@@ -23,17 +23,17 @@ final class AddPagesSourceSelectorController: UIViewController {
         static let blurAlpha: CGFloat = 0.3
         
         static let contentCornerRadius: CGFloat = 30
-        static let contentHeight: CGFloat = 360
+        static let contentHeight: CGFloat = 393
         static let contentBackground = UIColor(hex: "0F1C35")
         
         static let titleFontSize: CGFloat = 20
         static let horizontalInset: CGFloat = 24
         
-        static let buttonHeight: CGFloat = 58
-        static let buttonSpacing: CGFloat = 14
+        static let buttonHeight: CGFloat = 69
+        static let buttonSpacing: CGFloat = 13
         
-        static let closeButtonSize: CGFloat = 28
-        static let closeButtonTop: CGFloat = 20
+        static let closeButtonSize: CGFloat = 31
+        static let closeButtonTop: CGFloat = 24
         static let closeButtonRight: CGFloat = 24
     }
     
@@ -58,9 +58,9 @@ final class AddPagesSourceSelectorController: UIViewController {
         $0.textAlignment = .center
     }
 
-    private lazy var cameraButton = makeSourceButton(title: "Camera", icon: UIImage(named: "camera"))
-    private lazy var galleryButton = makeSourceButton(title: "Gallery", icon: UIImage(named: "gallery"))
-    private lazy var filesButton = makeSourceButton(title: "Files", icon: UIImage(named: "files"))
+    private lazy var cameraButton = makeSourceButton(title: "Camera", icon: UIImage(named: "cameraOption"))
+    private lazy var galleryButton = makeSourceButton(title: "Gallery", icon: UIImage(named: "galleryOption"))
+    private lazy var filesButton = makeSourceButton(title: "Files", icon: UIImage(named: "filesOption"))
 
     private lazy var closeButton = UIButton().apply {
         $0.setImage(UIImage(named: "close"), for: .normal)
@@ -125,7 +125,7 @@ final class AddPagesSourceSelectorController: UIViewController {
         }
 
         titleLabel.snp.makeConstraints {
-            $0.top.equalToSuperview().inset(24)
+            $0.top.equalToSuperview().inset(58)
             $0.centerX.equalToSuperview()
         }
 
@@ -142,8 +142,12 @@ final class AddPagesSourceSelectorController: UIViewController {
         }
 
         [cameraButton, galleryButton, filesButton].forEach {
-            $0.layer.cornerRadius = 16
+            $0.layer.cornerRadius = 18
             $0.backgroundColor = UIColor(hex: "1A1F3C")
+            
+            $0.snp.makeConstraints { make in
+                make.height.equalTo(Constants.buttonHeight)
+            }
         }
     }
 
@@ -153,12 +157,14 @@ final class AddPagesSourceSelectorController: UIViewController {
         let button = UIButton(type: .system)
         button.setTitle("  \(title)", for: .normal)
         button.setTitleColor(.white, for: .normal)
-        button.titleLabel?.font = .font(weight: .bold, size: 17)
+        button.titleLabel?.font = .font(weight: .bold, size: 18)
+        button.setBackgroundImage(.init(named: "baseCellBackground"), for: .normal)
         button.setImage(icon, for: .normal)
         button.contentHorizontalAlignment = .left
-        button.contentEdgeInsets = .init(top: 0, left: 18, bottom: 0, right: 18)
+        button.contentEdgeInsets = .init(top: 0, left: 41, bottom: 0, right: 18)
+        button.imageEdgeInsets = .init(top: 0, left: -18, bottom: 0, right: 0)
         button.imageView?.contentMode = .scaleAspectFit
-        button.tintColor = UIColor(hex: "006DFF")
+        button.clipsToBounds = true
         return button
     }
 
