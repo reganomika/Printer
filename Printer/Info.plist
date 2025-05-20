@@ -27,5 +27,7 @@
 			</array>
 		</dict>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>NSCameraUsageDescription</string>
 </dict>
 </plist>

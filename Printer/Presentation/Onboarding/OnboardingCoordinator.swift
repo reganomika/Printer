@@ -22,14 +22,14 @@ class OnboardingCoordinator {
                 title: "Smart printer detection".localized,
                 higlitedTexts: ["Smart".localized],
                 subtitle: "Auto-detecting and connecting to your printer in seconds".localized,
-                rating: false
+                rating: true
             ),
             OnboardingModel(
                 image: UIImage(named: UIScreen.isLittleDevice ? "onboarding_2" : "onboarding_2"),
                 title: "Share your thoughts with us".localized,
                 higlitedTexts: ["Share".localized],
                 subtitle: "Your voice matters — help us make the app even better".localized,
-                rating: true
+                rating: false
             ),
             OnboardingModel(
                 image: UIImage(named: UIScreen.isLittleDevice ? "onboarding_3" : "onboarding_3"),

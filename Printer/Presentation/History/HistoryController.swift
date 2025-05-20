@@ -1,47 +1,72 @@
 import UIKit
+import RealmSwift
 import ShadowImageButton
 
-class HistoryController: BaseController {
-    
-    private enum Constants {
-        static let shadowRadius: CGFloat = 14.7
-        static let shadowOffset = CGSize(width: 0, height: 4)
-        static let shadowOpacity: Float = 0.5
-        static let buttonCornerRadius: CGFloat = 18
-    }
-    
+final class HistoryController: BaseController {
+
+    private let viewModel = HistoryViewModel()
     private let tableView = UITableView()
     private let navigationTitle = UILabel()
-    
-    private lazy var connectionImageView = UIImageView(image: UIImage(named: "emptyHistory")).apply {
-        $0.contentMode = .scaleAspectFit
+
+    private let emptyStateView = UIView()
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        configureNavigation()
+        configureTableView()
+        configureEmptyState()
+        bindViewModel()
     }
     
-    private lazy var connectionTitleLabel = UILabel().apply {
-        $0.font = .font(weight: .bold, size: 22)
-        $0.text = "It looks empty here".localized
-        $0.textAlignment = .center
-        $0.numberOfLines = 0
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        viewModel.startObserving()
     }
-    
-    private lazy var connectionSubtitleLabel = UILabel().apply {
-        $0.font = .font(weight: .medium, size: 16)
-        $0.textColor = UIColor.init(hex: "ADACB8")
-        $0.text = "Plug in your TV to unlock these apps".localized
-        $0.textAlignment = .center
-        $0.numberOfLines = 0
+
+    private func configureNavigation() {
+        navigationTitle.text = "History".localized
+        navigationTitle.font = .font(weight: .bold, size: 28)
+        configurNavigation(leftView: navigationTitle)
     }
-    
-    private lazy var connectionStackView = UIStackView(arrangedSubviews: [
-        connectionTitleLabel,
-        connectionSubtitleLabel
-    ]).apply {
-        $0.axis = .vertical
-        $0.spacing = 9
+
+    private func configureTableView() {
+        tableView.register(BaseCell.self, forCellReuseIdentifier: BaseCell.reuseID)
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.separatorStyle = .none
+        tableView.backgroundColor = .clear
+        tableView.isHidden = true
+        tableView.contentInset.top = 20
+        tableView.contentInset.bottom = 100
+        view.addSubview(tableView)
+
+        tableView.snp.makeConstraints {
+            $0.top.equalTo(topView.snp.bottom)
+            $0.left.right.bottom.equalToSuperview()
+        }
     }
-    
-    private lazy var connectButton = ShadowImageButton().apply {
-        $0.configure(
+
+    private func configureEmptyState() {
+        let imageView = UIImageView(image: UIImage(named: "emptyHistory"))
+        imageView.contentMode = .scaleAspectFit
+
+        let titleLabel = UILabel()
+        titleLabel.font = .font(weight: .bold, size: 22)
+        titleLabel.text = "It looks empty here".localized
+        titleLabel.textAlignment = .center
+
+        let subtitleLabel = UILabel()
+        subtitleLabel.font = .font(weight: .medium, size: 16)
+        subtitleLabel.textColor = UIColor(hex: "ADACB8")
+        subtitleLabel.text = "Plug in your TV to unlock these apps".localized
+        subtitleLabel.textAlignment = .center
+
+        let stack = UIStackView(arrangedSubviews: [titleLabel, subtitleLabel])
+        stack.axis = .vertical
+        stack.spacing = 9
+
+        let button = ShadowImageButton()
+        button.configure(
             buttonConfig: .init(
                 title: "Add document".localized,
                 font: .font(weight: .bold, size: 18),
@@ -50,82 +75,131 @@ class HistoryController: BaseController {
             ),
             backgroundImageConfig: .init(
                 image: UIImage(named: "settingsPremiumBackground"),
-                cornerRadius: Constants.buttonCornerRadius,
+                cornerRadius: 18,
                 shadowConfig: .init(
                     color: UIColor(hex: "0044FF"),
-                    opacity: Constants.shadowOpacity,
-                    offset: Constants.shadowOffset,
-                    radius: Constants.shadowRadius
+                    opacity: 0.5,
+                    offset: CGSize(width: 0, height: 4),
+                    radius: 14.7
                 )
             )
         )
-        $0.action = { [weak self] in self?.openImport() }
-    }
-    
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        configureViewHierarchy()
-        configureNavigation()
-    }
-    
-    private func configureViewHierarchy() {
-        
-        view.addSubviews(
-            connectionImageView,
-            connectionStackView,
-            connectButton
-        )
-        
-        connectionImageView.snp.makeConstraints {
+        button.action = { [weak self] in self?.openImport() }
+
+        emptyStateView.addSubview(imageView)
+        emptyStateView.addSubview(stack)
+        emptyStateView.addSubview(button)
+        view.addSubview(emptyStateView)
+
+        imageView.snp.makeConstraints {
             $0.centerX.equalToSuperview()
             $0.centerY.equalToSuperview().offset(-100)
             $0.horizontalEdges.equalToSuperview()
         }
-        
-        connectionStackView.snp.makeConstraints {
+
+        stack.snp.makeConstraints {
+            $0.top.equalTo(imageView.snp.bottom).offset(21)
             $0.centerX.equalToSuperview()
-            $0.top.equalTo(connectionImageView.snp.bottom).inset(-21)
             $0.horizontalEdges.equalToSuperview().inset(50)
         }
-        
-        connectButton.snp.makeConstraints {
-            $0.horizontalEdges.equalToSuperview().inset(84)
+
+        button.snp.makeConstraints {
+            $0.top.equalTo(stack.snp.bottom).offset(28)
             $0.height.equalTo(56)
-            $0.top.equalTo(connectionStackView.snp.bottom).inset(-28)
+            $0.horizontalEdges.equalToSuperview().inset(84)
         }
-        
-        //        view.addSubview(tableView)
-        //        tableView.snp.makeConstraints {
-        //            $0.top.equalTo(topView.snp.bottom)
-        //            $0.left.right.bottom.equalToSuperview()
-        //        }
-        //
-        //        tableView.register(
-        //            PremiumCell.self,
-        //            forCellReuseIdentifier: PremiumCell.reuseID
-        //        )
-        //        tableView.register(
-        //            BaseCell.self,
-        //            forCellReuseIdentifier: BaseCell.reuseID
-        //        )
-        //
-        //        tableView.delegate = self
-        //        tableView.dataSource = self
-        //        tableView.backgroundColor = .clear
-        //        tableView.separatorStyle = .none
-        //        tableView.contentInset.top = 10
-        //        tableView.contentInset.bottom = 100
-        //        tableView.showsVerticalScrollIndicator = false
+
+        emptyStateView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
     }
-    
-    private func configureNavigation() {
-        navigationTitle.text = "History".localized
-        navigationTitle.font = .font(weight: .bold, size: 28)
-        configurNavigation(leftView: navigationTitle)
+
+    private func bindViewModel() {
+        viewModel.onUpdate = { [weak self] in
+            guard let self else { return }
+            let isEmpty = self.viewModel.documents.isEmpty
+            self.tableView.isHidden = isEmpty
+            self.emptyStateView.isHidden = !isEmpty
+            self.tableView.reloadData()
+        }
     }
-    
+
     @objc private func openImport() {
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        // Навигация на экран импорта
+    }
+    
+    private func viewDocument(_ document: Document) {
+        let previewVC = DocumentPreviewController(document: document)
+        present(vc: previewVC)
+    }
+}
+
+// MARK: - UITableViewDataSource
+
+extension HistoryController: UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        viewModel.documents.count
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let doc = viewModel.documents[indexPath.row]
+        let cell = tableView.dequeueReusableCell(withIdentifier: BaseCell.reuseID, for: indexPath) as! BaseCell
+        cell.configureForDocument(document: doc)
+        cell.delegate = self
+        return cell
+    }
+}
+
+// MARK: - UITableViewDelegate
+
+extension HistoryController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 100
+    }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let document = viewModel.documents[indexPath.row]
+        viewDocument(document)
+    }
+}
+
+extension HistoryController: BaseCellDelegate {
+    func baseCellDidTapMenu(_ cell: BaseCell) {
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+        let document = viewModel.documents[indexPath.row]
+        showActions(for: document)
+    }
+
+    private func showActions(for document: Document) {
+        let alert = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+
+        alert.addAction(UIAlertAction(title: "View", style: .default) { _ in
+            self.viewDocument(document)
+        })
+
+        alert.addAction(UIAlertAction(title: "Share", style: .default) { _ in
+//            self.shareDocument(document)
+        })
+
+        alert.addAction(UIAlertAction(title: "Print", style: .default) { _ in
+//            self.printDocument(document)
+        })
+
+        alert.addAction(UIAlertAction(title: "Delete", style: .destructive) { _ in
+            RealmManager.shared.deleteDocument(document) {
+                print("Документ удалён")
+            }
+        })
+
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+
+        if let popover = alert.popoverPresentationController {
+            popover.sourceView = self.view
+            popover.sourceRect = CGRect(x: self.view.bounds.midX, y: self.view.bounds.maxY, width: 0, height: 0)
+            popover.permittedArrowDirections = []
+        }
+
+        present(alert, animated: true)
     }
 }

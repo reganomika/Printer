@@ -39,7 +39,7 @@ class SettingsController: BaseController {
         tableView.dataSource = self
         tableView.backgroundColor = .clear
         tableView.separatorStyle = .none
-        tableView.contentInset.top = 10
+        tableView.contentInset.top = 20
         tableView.contentInset.bottom = 100
         tableView.showsVerticalScrollIndicator = false
     }

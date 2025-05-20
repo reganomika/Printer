@@ -1,4 +1,5 @@
 import UIKit
+import WebKit
 import FirebaseCore
 import PremiumManager
 
@@ -56,5 +57,39 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     ) {
         PremiumManager.shared.handlePushNotification(notification: notification)
         completionHandler([])
+    }
+}
+
+extension UILabel {
+    func getHighlightedText(_ text: String, with font: UIFont) -> NSMutableAttributedString? {
+        guard let labelText = self.text else { return nil }
+        
+        let attributedString = NSMutableAttributedString(string: labelText)
+        let range = (labelText as NSString).range(of: text)
+        attributedString.addAttribute(.font, value: font, range: range)
+        
+        return attributedString
+    }
+}
+
+extension DateFormatter {
+    static let displayDate: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd.MM.yy"
+        return formatter
+    }()
+}
+
+extension WKWebView {
+    func createPDF(completion: @escaping (Data?) -> Void) {
+        let config = WKPDFConfiguration()
+        self.createPDF(configuration: config) { result in
+            switch result {
+            case .success(let data):
+                completion(data)
+            case .failure:
+                completion(nil)
+            }
+        }
     }
 }
