@@ -51,7 +51,7 @@
 "Scan" = "Scan";
 "Air Printer Unlimited" = "Air Printer illimité";
 "Unlimited" = "Illimité";
-"Unlimited printing, faster speeds, and storage for" = "Impression rapide et illimitée";
+"Unlimited printing, faster speeds, and storage for" = "Impression illimitée, vitesses accrues et stockage pour %@";
 "Print without limits, experience faster processing, and files storage" = "Sans limite et rapide";
 "Start free trial" = "Essai gratuit";
 "Edit" = "Modifier";
@@ -68,3 +68,16 @@
 "year" = "an";
 "day" = "jour";
 "quarter" = "trimestre";
+"Plug in your TV to unlock these apps" = "Branchez la TV pour débloquer";
+"Settings" = "Réglages";
+"View" = "Voir";
+"Share" = "Partager";
+"Print" = "Imprimer";
+"Delete" = "Supprimer";
+"Try for free" = "Essai gratuit";
+"Cancel" = "Annuler";
+"weekly" = "hebdomadaire";
+"monthly" = "mensuel";
+"yearly" = "annuel";
+"dayly" = "quotidien";
+"quarterly" = "trimestriel";

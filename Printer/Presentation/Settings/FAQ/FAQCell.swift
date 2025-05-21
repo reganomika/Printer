@@ -20,7 +20,7 @@ final class FAQCell: UITableViewCell {
     
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = .font(weight: .medium, size: 18)
+        label.font = .font(weight: .bold, size: 18)
         label.textColor = .white
         label.numberOfLines = 0
         return label
@@ -80,8 +80,14 @@ final class FAQCell: UITableViewCell {
     }
     
     func configure(model: FAQModel, isExpanded: Bool) {
-
-        titleLabel.text = model.title
+        
+        titleLabel.attributedText = model.title.attributedString(
+            font: .font(weight: .bold, size: 18),
+            aligment: .left,
+            color: UIColor.white,
+            lineSpacing: 3,
+            maxHeight: 30
+        )
         
         subtitleLabel.isHidden = !isExpanded
         
@@ -92,8 +98,14 @@ final class FAQCell: UITableViewCell {
         } else {
             subtitleString = ""
         }
-        
-        subtitleLabel.text = subtitleString.localized
+                
+        subtitleLabel.attributedText = subtitleString.attributedString(
+            font: .font(weight: .medium, size: 14),
+            aligment: .left,
+            color: UIColor.white,
+            lineSpacing: 3,
+            maxHeight: 30
+        )
         
         rightImageView.image = isExpanded ? UIImage(named: "arrowUp") : UIImage(named: "arrow")
     }

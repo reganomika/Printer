@@ -45,7 +45,7 @@ final class TabBarView: UIView {
     init() {
         super.init(frame: .zero)
         
-        backgroundColor = .white.withAlphaComponent(0.08)
+        backgroundColor = .init(hex: "1B212C")
         layer.cornerRadius = 18
         
         setupTabBarButtons()

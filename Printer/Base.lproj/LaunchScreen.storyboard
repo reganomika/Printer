@@ -19,13 +19,23 @@
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="background" translatesAutoresizingMaskIntoConstraints="NO" id="5H9-lS-uDf">
                                 <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                                <color key="backgroundColor" red="0.10588235294117647" green="0.1294117719" blue="0.1725490093" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                            </imageView>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icon" translatesAutoresizingMaskIntoConstraints="NO" id="IPd-i3-Uer">
+                                <rect key="frame" x="121.66666666666669" y="351" width="150" height="150"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="150" id="H6h-CS-4u0"/>
+                                    <constraint firstAttribute="height" constant="150" id="aVR-AQ-ccp"/>
+                                </constraints>
                             </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="5H9-lS-uDf" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="4k9-C5-WWM"/>
+                            <constraint firstItem="IPd-i3-Uer" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="I8u-bR-5rS"/>
                             <constraint firstItem="5H9-lS-uDf" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="T2O-Gq-8jj"/>
+                            <constraint firstItem="IPd-i3-Uer" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="dwp-YS-IJe"/>
                             <constraint firstAttribute="trailing" secondItem="5H9-lS-uDf" secondAttribute="trailing" id="lm6-ao-0iR"/>
                             <constraint firstAttribute="bottom" secondItem="5H9-lS-uDf" secondAttribute="bottom" id="mFB-Gb-zUb"/>
                         </constraints>
@@ -38,6 +48,7 @@
     </scenes>
     <resources>
         <image name="background" width="393" height="852"/>
+        <image name="icon" width="500" height="500"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

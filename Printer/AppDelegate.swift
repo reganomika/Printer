@@ -7,7 +7,7 @@ import PremiumManager
 class AppDelegate: UIResponder, UIApplicationDelegate {
         
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-//        FirebaseApp.configure()
+        FirebaseApp.configure()
         PremiumManager.shared.configure(with: .init(apiKey: Config.apphudKey, debugMode: Config.debugMode))
         PremiumManager.shared.fetchProducts()
         
@@ -91,5 +91,15 @@ extension WKWebView {
                 completion(nil)
             }
         }
+    }
+}
+
+extension UIView {
+    func applyDropShadow(color: UIColor, opacity: Float, offset: CGSize, radius: CGFloat) {
+        layer.shadowColor = color.cgColor
+        layer.shadowOpacity = opacity
+        layer.shadowOffset = offset
+        layer.shadowRadius = radius
+        layer.masksToBounds = false
     }
 }

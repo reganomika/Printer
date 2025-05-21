@@ -14,7 +14,7 @@ final class TabBarController: UIViewController {
     private let viewControllers = [
         UINavigationController(rootViewController: ImportController()),
         UINavigationController(rootViewController: HistoryController()),
-        UINavigationController(rootViewController: SettingsController())
+        UINavigationController(rootViewController: AppSettingsViewController())
     ]
     
     private var currentViewController: UIViewController?

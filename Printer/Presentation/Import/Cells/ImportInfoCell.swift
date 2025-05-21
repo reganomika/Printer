@@ -59,11 +59,12 @@ class ImportInfoCell: UITableViewCell {
         containerView.addSubviews(infoTitle, infoSubtitle, leftImageView)
         containerView.snp.makeConstraints {
             $0.horizontalEdges.equalToSuperview().inset(25)
-            $0.top.bottom.equalToSuperview().inset(13)
+            $0.top.equalToSuperview()
+            $0.bottom.equalToSuperview().inset(17)
         }
         
         infoTitle.snp.makeConstraints {
-            $0.left.equalTo(leftImageView.snp.right).inset(10)
+            $0.left.equalToSuperview().inset(139)
             $0.trailing.equalToSuperview().inset(5)
             $0.top.equalToSuperview().inset(30)
         }
@@ -75,7 +76,10 @@ class ImportInfoCell: UITableViewCell {
         }
         
         leftImageView.snp.makeConstraints { make in
-            make.bottom.top.left.equalToSuperview()
+            make.left.equalToSuperview().inset(5)
+            make.top.equalToSuperview()
+            make.height.equalTo(148)
+            make.width.equalTo(133)
         }
     }
 }

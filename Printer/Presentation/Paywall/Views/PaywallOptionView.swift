@@ -33,6 +33,7 @@ final class PaywallOptionView: UIView {
         label.label.font = .font(weight: .medium, size: 16)
         label.label.minimumScaleFactor = 0.5
         label.label.adjustsFontSizeToFitWidth = true
+        label.label.textAlignment = .left
         return label
     }()
     
@@ -48,6 +49,7 @@ final class PaywallOptionView: UIView {
         let stackView = UIStackView(arrangedSubviews: [titleLabel, subtitleLabel])
         stackView.axis = .vertical
         stackView.spacing = 2
+        stackView.alignment = .leading
         return stackView
     }()
     

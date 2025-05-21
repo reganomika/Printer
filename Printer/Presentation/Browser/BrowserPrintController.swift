@@ -5,7 +5,7 @@ import SnapKit
 import PDFKit
 import ShadowImageButton
 
-final class BrowserPrintController: UIViewController {
+final class BrowserPrintController: BaseController {
 
     private let webView = WKWebView()
     private let urlTextField = UITextField()
@@ -46,7 +46,6 @@ final class BrowserPrintController: UIViewController {
     // MARK: - Setup
 
     private func setupUI() {
-        view.backgroundColor = UIColor(hex: "#0A0F2E")
         setupNavigation()
         setupSearchField()
         setupWebView()
@@ -225,8 +224,9 @@ final class BrowserPrintController: UIViewController {
         }
         
         if Storage.shared.buttonsTapNumber > 4, !Storage.shared.wasReviewScreen {
-            Storage.shared.wasReviewScreen = true
-            UIApplication.topViewController()?.presentCrossDissolve(vc: ReviewController())
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                UIApplication.topViewController()?.presentCrossDissolve(vc: ReviewController())
+            }
         }
         Storage.shared.buttonsTapNumber += 1
         webView.createPDF { [weak self] pdfData in

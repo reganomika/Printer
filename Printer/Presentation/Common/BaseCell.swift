@@ -47,9 +47,7 @@ final class BaseCell: UITableViewCell {
 
     private let leftImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.layer.cornerRadius = 8
-        imageView.clipsToBounds = true
-        imageView.contentMode = .scaleAspectFill
+        imageView.contentMode = .scaleAspectFit
         return imageView
     }()
 
@@ -110,7 +108,7 @@ final class BaseCell: UITableViewCell {
         customBackgroundView.snp.makeConstraints {
             $0.left.right.equalToSuperview().inset(25)
             $0.top.equalToSuperview()
-            $0.bottom.equalToSuperview().inset(13)
+            $0.bottom.equalToSuperview().inset(17)
         }
         
         titleLabel.snp.makeConstraints { make in
@@ -181,12 +179,6 @@ extension BaseCell {
         rightImageView.isHidden = false
         rightImageView.image = UIImage(named: "menu")
 
-        if let preview = PDFPreviewGenerator.shared.previewImage(for: document.filePath) {
-            leftImageView.image = preview
-        } else {
-            leftImageView.image = UIImage(named: "pdfPlaceholder")
-        }
-
         leftImageView.snp.updateConstraints {
             $0.left.equalToSuperview().inset(10)
             $0.height.width.equalTo(60)
@@ -194,6 +186,17 @@ extension BaseCell {
         
         titleLabel.snp.updateConstraints {
             $0.left.equalToSuperview().inset(86)
+        }
+        
+        leftImageView.layer.cornerRadius = 15
+        leftImageView.layer.masksToBounds = true
+        leftImageView.contentMode = .scaleAspectFill
+        leftImageView.clipsToBounds = true
+        leftImageView.layer.borderColor = UIColor.white.withAlphaComponent(0.1).cgColor
+        leftImageView.layer.borderWidth = 1
+        
+        if let preview = PDFPreviewGenerator.shared.previewImage(for: document.filePath) {
+            leftImageView.image = preview
         }
     }
 }

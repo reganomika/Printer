@@ -59,8 +59,9 @@ final class HistoryController: BaseController {
         let subtitleLabel = UILabel()
         subtitleLabel.font = .font(weight: .medium, size: 16)
         subtitleLabel.textColor = UIColor(hex: "ADACB8")
-        subtitleLabel.text = "Plug in your TV to unlock these apps".localized
+        subtitleLabel.text = "Add your first document to begin".localized
         subtitleLabel.textAlignment = .center
+        subtitleLabel.numberOfLines = 0
 
         let stack = UIStackView(arrangedSubviews: [titleLabel, subtitleLabel])
         stack.axis = .vertical
@@ -106,7 +107,7 @@ final class HistoryController: BaseController {
 
         button.snp.makeConstraints {
             $0.top.equalTo(stack.snp.bottom).offset(28)
-            $0.height.equalTo(56)
+            $0.height.equalTo(69)
             $0.horizontalEdges.equalToSuperview().inset(84)
         }
 
@@ -159,8 +160,9 @@ final class HistoryController: BaseController {
         }
         
         if Storage.shared.buttonsTapNumber > 4, !Storage.shared.wasReviewScreen {
-            Storage.shared.wasReviewScreen = true
-            UIApplication.topViewController()?.presentCrossDissolve(vc: ReviewController())
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                UIApplication.topViewController()?.presentCrossDissolve(vc: ReviewController())
+            }
         }
         Storage.shared.buttonsTapNumber += 1
         
@@ -212,25 +214,25 @@ extension HistoryController: BaseCellDelegate {
     private func showActions(for document: Document) {
         let alert = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
 
-        alert.addAction(UIAlertAction(title: "View", style: .default) { _ in
+        alert.addAction(UIAlertAction(title: "View".localized, style: .default) { _ in
             self.viewDocument(document)
         })
 
-        alert.addAction(UIAlertAction(title: "Share", style: .default) { _ in
+        alert.addAction(UIAlertAction(title: "Share".localized, style: .default) { _ in
             self.shareDocument(document)
         })
 
-        alert.addAction(UIAlertAction(title: "Print", style: .default) { _ in
+        alert.addAction(UIAlertAction(title: "Print".localized, style: .default) { _ in
             self.printDocument(document)
         })
 
-        alert.addAction(UIAlertAction(title: "Delete", style: .destructive) { _ in
+        alert.addAction(UIAlertAction(title: "Delete".localized, style: .destructive) { _ in
             RealmManager.shared.deleteDocument(document) {
                 print("Документ удалён")
             }
         })
 
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Cancel".localized, style: .cancel))
 
         if let popover = alert.popoverPresentationController {
             popover.sourceView = self.view

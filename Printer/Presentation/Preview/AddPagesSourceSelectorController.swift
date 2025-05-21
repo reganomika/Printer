@@ -58,9 +58,9 @@ final class AddPagesSourceSelectorController: UIViewController {
         $0.textAlignment = .center
     }
 
-    private lazy var cameraButton = makeSourceButton(title: "Camera", icon: UIImage(named: "cameraOption"))
-    private lazy var galleryButton = makeSourceButton(title: "Gallery", icon: UIImage(named: "galleryOption"))
-    private lazy var filesButton = makeSourceButton(title: "Files", icon: UIImage(named: "filesOption"))
+    private lazy var cameraButton = makeSourceButton(title: "Camera".localized, icon: UIImage(named: "cameraOption"))
+    private lazy var galleryButton = makeSourceButton(title: "Gallery".localized, icon: UIImage(named: "galleryOption"))
+    private lazy var filesButton = makeSourceButton(title: "Files".localized, icon: UIImage(named: "filesOption"))
 
     private lazy var closeButton = UIButton().apply {
         $0.setImage(UIImage(named: "close"), for: .normal)

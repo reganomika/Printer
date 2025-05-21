@@ -19,7 +19,7 @@ class ImportController: BaseController {
     private func configureViewHierarchy() {
         view.addSubview(tableView)
         tableView.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide).inset(104)
+            $0.top.equalTo(view.safeAreaLayoutGuide).inset(114)
             $0.left.right.bottom.equalToSuperview()
         }
 
@@ -88,7 +88,7 @@ extension ImportController: UITableViewDataSource, UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let model = viewModel.cells[indexPath.row]
-        return model == .info ? 146.0 : 90.0
+        return model == .info ? 137.0 : 94.0
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

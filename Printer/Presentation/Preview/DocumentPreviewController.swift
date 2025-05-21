@@ -5,6 +5,7 @@ import VisionKit
 import UniformTypeIdentifiers
 import QuickLook
 import ShadowImageButton
+import CustomBlurEffectView
 
 final class DocumentPreviewController: UIViewController {
 
@@ -16,10 +17,10 @@ final class DocumentPreviewController: UIViewController {
     private let pdfView = PDFView()
     private let titleLabel = UILabel()
     private let dateLabel = UILabel()
-    private let backButton = UIButton(type: .system)
+    private let backButton = UIButton()
     private let actionStack = UIStackView()
-    private let editButton = UIButton(type: .system)
-    private let addPagesButton = UIButton(type: .system)
+    private var editButton = UIView()
+    private var addPagesButton = UIView()
     
     private lazy var printButton = ShadowImageButton().apply {
         $0.configure(
@@ -136,11 +137,11 @@ final class DocumentPreviewController: UIViewController {
         actionStack.spacing = 16
         actionStack.distribution = .fillEqually
 
-        configureActionButton(editButton, title: "Edit".localized, icon: "edit")
-        configureActionButton(addPagesButton, title: "Add pages".localized, icon: "addPages")
-
-        editButton.addTarget(self, action: #selector(didTapEdit), for: .touchUpInside)
-        addPagesButton.addTarget(self, action: #selector(didTapAddPages), for: .touchUpInside)
+        editButton = makeBlurredButton(title: "Edit".localized, icon: "edit", target: self, action: #selector(didTapEdit))
+        addPagesButton = makeBlurredButton(title: "Add pages".localized, icon: "addPages", target: self, action: #selector(didTapAddPages))
+        
+//        (editButton.subviews.first(where: { $0 is UIButton }) as? UIButton)?.addTarget(self, action: #selector(didTapEdit), for: .touchUpInside)
+//        (addPagesButton.subviews.first(where: { $0 is UIButton }) as? UIButton)?.addTarget(self, action: #selector(didTapAddPages), for: .touchUpInside)
 
         actionStack.addArrangedSubview(editButton)
         actionStack.addArrangedSubview(addPagesButton)
@@ -148,28 +149,38 @@ final class DocumentPreviewController: UIViewController {
 
         actionStack.snp.makeConstraints {
             $0.left.right.equalToSuperview().inset(26)
-            $0.bottom.equalToSuperview().inset(32)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(8)
             $0.height.equalTo(64)
         }
     }
 
-    private func configureActionButton(_ button: UIButton, title: String, icon: String) {
-        var config = UIButton.Configuration.filled()
-        config.image = UIImage(named: icon)
-        config.imagePadding = 10
-        config.baseBackgroundColor = UIColor(hex: "#101B37")
-        config.baseForegroundColor = .white
-        config.cornerStyle = .capsule
+    private func makeBlurredButton(title: String, icon: String, target: Any?, action: Selector) -> UIView {
+        let blurView = CustomBlurEffectView().apply {
+            $0.blurRadius = 10
+            $0.colorTint = UIColor.white
+            $0.colorTintAlpha = 0.11
+            $0.clipsToBounds = true
+            $0.layer.cornerRadius = 18
+        }
 
-        let font = UIFont.font(weight: .bold, size: 16)
-        let attributes: [NSAttributedString.Key: Any] = [
-            .font: font,
-            .foregroundColor: UIColor.white
-        ]
-        let attributedTitle = NSAttributedString(string: title, attributes: attributes)
-        config.attributedTitle = AttributedString(attributedTitle)
+        let button = UIButton(type: .system)
+        button.setTitle(title, for: .normal)
+        button.setImage(UIImage(named: icon), for: .normal)
+        button.tintColor = .white
+        button.titleLabel?.font = .font(weight: .bold, size: 16)
+        button.semanticContentAttribute = .forceLeftToRight
+        button.imageEdgeInsets = .init(top: 0, left: -5, bottom: 0, right: 5)
+        button.titleEdgeInsets = .init(top: 0, left: 5, bottom: 0, right: -5)
 
-        button.configuration = config
+        button.addTarget(target, action: action, for: .touchUpInside)
+
+        blurView.addSubview(button)
+
+        button.snp.makeConstraints {
+            $0.edges.equalToSuperview().inset(12)
+        }
+
+        return blurView
     }
 
     private func loadPDF() {
@@ -192,8 +203,10 @@ final class DocumentPreviewController: UIViewController {
         }
         
         if Storage.shared.buttonsTapNumber > 4, !Storage.shared.wasReviewScreen {
-            Storage.shared.wasReviewScreen = true
-            UIApplication.topViewController()?.presentCrossDissolve(vc: ReviewController())
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                UIApplication.topViewController()?.presentCrossDissolve(vc: ReviewController())
+            }
+           
         }
         Storage.shared.buttonsTapNumber += 1
         

@@ -38,7 +38,7 @@ class PaywallFirstVariantController: OnboardingController {
     private lazy var topOptionView: PaywallOptionView = {
         let view = PaywallOptionView()
 
-        let title = topProduct?.duration?.longDescription.capitalized ?? "-"
+        let title = topProduct?.duration?.longDescription.lowercased().localized.capitalized ?? "-"
         var rightTitle = "-"
         var subtitle: String?
 
@@ -81,7 +81,7 @@ class PaywallFirstVariantController: OnboardingController {
     private lazy var bottomOptionView: PaywallOptionView = {
         let view = PaywallOptionView()
 
-        let title = bottomProduct?.duration?.longDescription.capitalized ?? "-"
+        let title = bottomProduct?.duration?.longDescription.lowercased().localized.capitalized ?? "-"
         var rightTitle = "-"
         var subtitle: String?
 
@@ -231,7 +231,7 @@ class PaywallFirstVariantController: OnboardingController {
 
         bottomStackView.snp.remakeConstraints {
             $0.top.equalTo(nextButton.snp.bottom).offset(21)
-            $0.leading.trailing.equalToSuperview().inset(16)
+            $0.leading.trailing.equalToSuperview().inset(25)
             $0.height.equalTo(18)
         }
     }
@@ -283,6 +283,7 @@ class PaywallFirstVariantController: OnboardingController {
         topOptionView.isSelectedOption = true
         bottomOptionView.isSelectedOption = false
         switchView.isOn = true
+        nextButton.updateTitle(title: "Try for free".localized)
     }
 
     @objc func bottomOptionTapped() {
@@ -291,5 +292,6 @@ class PaywallFirstVariantController: OnboardingController {
         topOptionView.isSelectedOption = false
         bottomOptionView.isSelectedOption = true
         switchView.isOn = false
+        nextButton.updateTitle(title: "Continue".localized)
     }
 }

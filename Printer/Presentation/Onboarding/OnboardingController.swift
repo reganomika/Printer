@@ -8,7 +8,7 @@ import ShadowImageButton
 import Utilities
 
 private enum Constants {
-    static let buttonHeight: CGFloat = 69
+    static let buttonHeight: CGFloat = UIScreen.isBigDevice ? 75 : 69
     static let buttonCornerRadius: CGFloat = 18
     static let shadowRadius: CGFloat = 14.7
     static let shadowOffset = CGSize(width: 0, height: 4)
@@ -31,7 +31,7 @@ class OnboardingController: BaseController {
                 title: "Continue".localized,
                 font: .font(
                     weight: .bold,
-                    size: 19
+                    size: UIScreen.isBigDevice ? 20 : 18
                 ),
                 textColor: .white,
                 image: nil
@@ -143,7 +143,7 @@ class OnboardingController: BaseController {
         
         bottomStackView.snp.makeConstraints { make in
             make.top.equalTo(nextButton.snp.bottom).offset(21)
-            make.leading.trailing.equalToSuperview().inset(26)
+            make.leading.trailing.equalToSuperview().inset(25)
             make.height.equalTo(18)
         }
     }
@@ -153,12 +153,12 @@ class OnboardingController: BaseController {
         
         imageView.snp.makeConstraints { make in
             make.left.right.equalToSuperview()
-            make.top.equalTo(view.safeAreaLayoutGuide).inset(175)
+            make.top.equalTo(view.safeAreaLayoutGuide).inset(UIScreen.isBigDevice ? 200 : 175)
             make.bottom.equalTo(nextButton.snp.top)
         }
         
         titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).inset(33)
+            make.top.equalTo(view.safeAreaLayoutGuide).inset(UIScreen.isBigDevice ? 45 : 33)
             make.leading.trailing.equalToSuperview().inset(20)
         }
         
@@ -170,7 +170,7 @@ class OnboardingController: BaseController {
         
         nextButton.snp.makeConstraints { make in
             make.bottom.equalTo(view.safeAreaLayoutGuide).offset(-69)
-            make.leading.trailing.equalToSuperview().inset(18)
+            make.leading.trailing.equalToSuperview().inset(25)
             make.height.equalTo(Constants.buttonHeight)
         }
     }
